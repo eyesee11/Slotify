@@ -1,4 +1,5 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -27,26 +28,38 @@ const BottomNavLinks = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Load state from localStorage if available
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar-collapsed');
+    if (saved === 'true') setCollapsed(true);
+  }, []);
+
+  const toggleCollapse = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem('sidebar-collapsed', String(next));
+  };
 
   return (
-    <div className="admin-shell">
+    <div className={`admin-shell ${collapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-logo">
           <div className="logo-icon">
             <CalendarDays size={18} color="#fff" />
           </div>
-          <span className="logo-text">Slotify</span>
-          <button className="sidebar-collapse-btn">
-            {/* Double Chevron icon or similar would go here */}
-            «
+          {!collapsed && <span className="logo-text">Slotify</span>}
+          <button className="sidebar-collapse-btn" onClick={toggleCollapse}>
+            {collapsed ? '»' : '«'}
           </button>
         </div>
 
         <div className="sidebar-create">
           <button className="create-btn">
             <Plus size={18} />
-            Create
+            {!collapsed && 'Create'}
           </button>
         </div>
 
@@ -54,9 +67,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {MainNavLinks.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(href + '/');
             return (
-              <Link key={href} href={href} className={`nav-item ${active ? 'active' : ''}`}>
+              <Link 
+                key={href} 
+                href={href} 
+                className={`nav-item ${active ? 'active' : ''}`}
+                title={collapsed ? label : ''}
+              >
                 <Icon size={18} />
-                {label}
+                {!collapsed && <span>{label}</span>}
               </Link>
             );
           })}
@@ -65,9 +83,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="sidebar-bottom">
           <nav className="sidebar-nav">
             {BottomNavLinks.map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className="nav-item secondary">
+              <Link 
+                key={href} 
+                href={href} 
+                className="nav-item secondary"
+                title={collapsed ? label : ''}
+              >
                 <Icon size={18} />
-                {label}
+                {!collapsed && <span>{label}</span>}
               </Link>
             ))}
           </nav>
@@ -75,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main content */}
-      <div className="main-wrapper">
+      <div className="main-wrapper" style={{ marginLeft: collapsed ? '72px' : 'var(--sidebar-width)' }}>
         <header className="admin-top-header">
           <ProfileDropdown />
         </header>

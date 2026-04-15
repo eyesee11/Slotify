@@ -59,6 +59,29 @@ async function main() {
     }
   }
 
+  console.log('Checking for default Event Type...');
+  let eventType = await prisma.eventType.findFirst({
+    where: { user_id: 1, slug: 'discovery-call' }
+  });
+
+  if (!eventType) {
+    console.log('Creating default Event Type...');
+    await prisma.eventType.create({
+      data: {
+        user_id: 1,
+        name: 'Discovery Call',
+        slug: 'discovery-call',
+        duration_minutes: 30,
+        buffer_minutes: 15,
+        description: 'A 30-minute intro call to discuss your project.',
+        color: '#0069FF',
+        is_active: true,
+      }
+    });
+  } else {
+    console.log('Discovery Call event already exists.');
+  }
+
   console.log('Seed complete.');
 }
 

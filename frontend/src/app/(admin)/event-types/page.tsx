@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { Plus, MoreHorizontal, Copy, Pencil, Trash2, Link } from 'lucide-react';
+import { Plus, MoreHorizontal, Copy, Pencil, Trash2, Link, ExternalLink } from 'lucide-react';
 import { getEventTypes, createEventType, updateEventType, deleteEventType, EventType } from '@/lib/api';
 import { slugify, EVENT_COLORS } from '@/lib/utils';
 
@@ -271,18 +271,18 @@ export default function EventTypesPage() {
               <div className="et-card-accent" style={{ background: et.color || 'var(--color-primary)' }} />
               <div className="et-card-body">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div className="et-card-name">{et.name}</div>
-                    <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
-                      <span className="badge badge-gray">{et.duration_minutes} min</span>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+                      <span className="badge badge-gray" style={{ padding: '4px 10px', fontSize: '12px' }}>{et.duration_minutes} min</span>
                       {et.buffer_minutes > 0 && <span className="badge badge-blue">+{et.buffer_minutes}m buffer</span>}
                     </div>
-                    <div className="et-card-slug">
-                      <Link size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} />
-                      default_user/{et.slug}
+                    <div className="et-card-slug" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-primary)', fontWeight: 500 }}>
+                      <ExternalLink size={14} />
+                      <span style={{ fontSize: '13px' }}>default_user/{et.slug}</span>
                     </div>
                     {et.description && (
-                      <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 4 }}>
+                      <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: '1.5', marginTop: 8 }}>
                         {et.description}
                       </p>
                     )}

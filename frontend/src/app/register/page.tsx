@@ -70,6 +70,7 @@ export default function RegisterPage() {
                   autoComplete="name"
                   required
                   placeholder="Enter your full name"
+                  defaultValue="Test User"
                   className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0069FF] focus:border-[#0069FF] sm:text-sm transition-colors"
                 />
               </div>
@@ -87,6 +88,7 @@ export default function RegisterPage() {
                   autoComplete="email"
                   required
                   placeholder="Enter your email"
+                  defaultValue="default@example.com"
                   className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0069FF] focus:border-[#0069FF] sm:text-sm transition-colors"
                 />
               </div>
@@ -104,6 +106,7 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                   required
                   placeholder="Create a password"
+                  defaultValue="admin123"
                   className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#0069FF] focus:border-[#0069FF] sm:text-sm transition-colors"
                 />
               </div>

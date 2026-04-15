@@ -8,7 +8,7 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   if (!res.ok) {
     const text = await res.text();
     let msg = `API Error ${res.status}`;
-    try { msg = JSON.parse(text)?.error || msg; } catch {}
+    try { msg = JSON.parse(text)?.error || msg; } catch { }
     throw new Error(msg);
   }
   if (res.status === 204) return undefined as T;
@@ -64,7 +64,7 @@ export interface Booking {
   cancel_token: string;
   notes?: string;
   created_at: string;
-  event_type?: EventType & { user?: { name: string; timezone: string } };
+  event_type?: EventType & { user?: { name: string; username: string; timezone: string } };
 }
 
 // ---- Event Types ----

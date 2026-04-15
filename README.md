@@ -1,6 +1,6 @@
 # Slotify
 
-Slotify is a full-featured scheduling application inspired by Calendly, built to facilitate seamless appointment booking and availability management without the back-and-forth emails.
+Slotify is an enterprise-grade scheduling automation platform designed to facilitate seamless appointment booking and availability management.
 
 ## Table of Contents
 
@@ -48,7 +48,7 @@ Slotify is a full-featured scheduling application inspired by Calendly, built to
 This project uses a monorepo-style structure separating the frontend and backend to follow modern microservice and API-first principles.
 
 ```text
-Calendly_clone/
+slotify/
 ├── backend/                  # Express.js REST API
 │   ├── prisma/               # Database schemas, migrations, and seed script
 │   ├── src/

@@ -160,7 +160,7 @@ function EventTypeModal({
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <input className="input" value={newQuestion} onChange={e => setNewQuestion(e.target.value)} placeholder="Add a question..." />
-              <button type="button" className="btn-ghost" onClick={() => { if(newQuestion.trim()) { setQuestions([...questions, newQuestion.trim()]); setNewQuestion(''); } }}>Add</button>
+              <button type="button" className="btn-ghost" onClick={() => { if (newQuestion.trim()) { setQuestions([...questions, newQuestion.trim()]); setNewQuestion(''); } }}>Add</button>
             </div>
           </div>
 
@@ -226,6 +226,7 @@ function EventCardMenu({ eventType, onEdit, onDelete }: { eventType: EventType; 
 export default function EventTypesPage() {
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<EventType | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<EventType | null>(null);
@@ -233,7 +234,14 @@ export default function EventTypesPage() {
 
   const load = async () => {
     setLoading(true);
-    try { setEventTypes(await getEventTypes()); } finally { setLoading(false); }
+    setError('');
+    try {
+      setEventTypes(await getEventTypes());
+    } catch (err: any) {
+      setError(err.message || 'Failed to load event types');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -260,9 +268,15 @@ export default function EventTypesPage() {
         </button>
       </div>
 
+      {error && (
+        <div style={{ background: '#fdf0f0', border: '1px solid var(--color-error)', color: 'var(--color-error)', padding: '12px 16px', borderRadius: 8, marginBottom: 24, fontSize: 14 }}>
+          {error}
+        </div>
+      )}
+
       {loading ? (
         <div className="et-grid">
-          {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 8 }} />)}
+          {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 8 }} />)}
         </div>
       ) : (
         <div className="et-grid">

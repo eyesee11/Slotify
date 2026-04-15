@@ -106,6 +106,7 @@ export const createBooking = (data: {
   invitee_email: string;
   start_time: string;
   notes?: string;
+  invitee_answers?: any;
 }) => apiFetch<Booking>('/bookings', { method: 'POST', body: JSON.stringify(data) });
 export const getBookingConfirmation = (token: string) => apiFetch<Booking>(`/bookings/confirm/${token}`);
 export const cancelBooking = (token: string) =>

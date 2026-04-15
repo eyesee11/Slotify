@@ -1,4 +1,4 @@
-import { getEventTypes } from '@/lib/api';
+import { getEventTypes, type EventType } from '@/lib/api';
 import { getInitials } from '@/lib/utils';
 import Link from 'next/link';
 import { Clock, ChevronRight } from 'lucide-react';
@@ -6,7 +6,7 @@ import { Clock, ChevronRight } from 'lucide-react';
 export default async function PublicProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
 
-  let eventTypes = [];
+  let eventTypes: EventType[] = [];
   try { eventTypes = await getEventTypes(); } catch {}
 
   return (

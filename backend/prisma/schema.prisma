@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -58,7 +58,7 @@ model Availability {
 model AvailabilityRule {
   id               Int            @id @default(autoincrement())
   availability_id  Int
-  day_of_week      Int            @db.TinyInt
+  day_of_week      Int            @db.SmallInt
   start_time       String         @db.VarChar(8) // Format "HH:mm:ss"
   end_time         String         @db.VarChar(8) // Format "HH:mm:ss"
   is_available     Boolean        @default(true)
@@ -86,8 +86,8 @@ model Booking {
   event_type_id    Int
   invitee_name     String         @db.VarChar(100)
   invitee_email    String         @db.VarChar(255)
-  start_time       DateTime       @db.DateTime(3)
-  end_time         DateTime       @db.DateTime(3)
+  start_time       DateTime       @db.Timestamp(3)
+  end_time         DateTime       @db.Timestamp(3)
   status           BookingStatus  @default(scheduled)
   cancel_token     String         @unique @db.VarChar(36)
   notes            String?        @db.Text

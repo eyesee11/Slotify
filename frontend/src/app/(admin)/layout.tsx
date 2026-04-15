@@ -47,9 +47,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-logo">
-          <div className="logo-icon">
-            <CalendarDays size={18} color="#fff" />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="Slotify Logo" 
+            style={{ width: 24, height: 24, objectFit: 'contain' }} 
+          />
           {!collapsed && <span className="logo-text">Slotify</span>}
           <button className="sidebar-collapse-btn" onClick={toggleCollapse}>
             {collapsed ? '»' : '«'}

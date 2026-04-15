@@ -59,10 +59,18 @@ export default function MeetingsPage() {
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
   const [meetings, setMeetings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const load = async () => {
     setLoading(true);
-    try { setMeetings(await getMeetings(tab)); } finally { setLoading(false); }
+    setError('');
+    try { 
+      setMeetings(await getMeetings(tab)); 
+    } catch (err: any) {
+      setError(err.message || 'Failed to load meetings');
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   useEffect(() => { load(); }, [tab]);
@@ -80,6 +88,12 @@ export default function MeetingsPage() {
         <button className={`tab ${tab === 'upcoming' ? 'active' : ''}`} onClick={() => setTab('upcoming')}>Upcoming</button>
         <button className={`tab ${tab === 'past' ? 'active' : ''}`} onClick={() => setTab('past')}>Past</button>
       </div>
+
+      {error && (
+        <div style={{ background: '#fdf0f0', border: '1px solid var(--color-error)', color: 'var(--color-error)', padding: '12px 16px', borderRadius: 8, marginBottom: 24, fontSize: 14 }}>
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

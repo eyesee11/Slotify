@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int            @id @default(autoincrement())
+  name             String         @db.VarChar(100)
+  email            String         @unique @db.VarChar(255)
+  username         String         @unique @db.VarChar(50)
+  timezone         String         @db.VarChar(60)
+  created_at       DateTime       @default(now())
+  
+  event_types      EventType[]
+  availabilities   Availability[]
+  
+  @@map("users")
+}
+
+model EventType {
+  id               Int            @id @default(autoincrement())
+  user_id          Int
+  name             String         @db.VarChar(100)
+  slug             String         @db.VarChar(100)
+  duration_minutes Int
+  buffer_minutes   Int            @default(0)
+  description      String?        @db.Text
+  questions        Json?
+  color            String?        @db.VarChar(7)
+  is_active        Boolean        @default(true)
+  created_at       DateTime       @default(now())
+
+  user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  bookings         Booking[]
+
+  @@unique([slug])
+  @@map("event_types")
+}
+
+model Availability {
+  id               Int            @id @default(autoincrement())
+  user_id          Int
+  name             String         @db.VarChar(100)
+  is_default       Boolean        @default(false)
+  created_at       DateTime       @default(now())
+
+  user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  rules            AvailabilityRule[]
+  overrides        DateOverride[]
+
+  @@map("availability")
+}
+
+model AvailabilityRule {
+  id               Int            @id @default(autoincrement())
+  availability_id  Int
+  day_of_week      Int            @db.TinyInt
+  start_time       String         @db.VarChar(8) // Format "HH:mm:ss"
+  end_time         String         @db.VarChar(8) // Format "HH:mm:ss"
+  is_available     Boolean        @default(true)
+
+  availability     Availability   @relation(fields: [availability_id], references: [id], onDelete: Cascade)
+
+  @@map("availability_rules")
+}
+
+model DateOverride {
+  id               Int            @id @default(autoincrement())
+  availability_id  Int
+  override_date    DateTime       @db.Date
+  is_unavailable   Boolean        @default(false)
+  start_time       String?        @db.VarChar(8)
+  end_time         String?        @db.VarChar(8)
+
+  availability     Availability   @relation(fields: [availability_id], references: [id], onDelete: Cascade)
+
+  @@map("date_overrides")
+}
+
+model Booking {
+  id               Int            @id @default(autoincrement())
+  event_type_id    Int
+  invitee_name     String         @db.VarChar(100)
+  invitee_email    String         @db.VarChar(255)
+  start_time       DateTime       @db.DateTime(3)
+  end_time         DateTime       @db.DateTime(3)
+  status           BookingStatus  @default(scheduled)
+  cancel_token     String         @unique @db.VarChar(36)
+  notes            String?        @db.Text
+  invitee_answers  Json?
+  created_at       DateTime       @default(now())
+
+  event_type       EventType      @relation(fields: [event_type_id], references: [id], onDelete: Cascade)
+
+  @@index([start_time])
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  scheduled
+  cancelled
+}

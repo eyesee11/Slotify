@@ -1,56 +1,108 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Globe, Zap, ClipboardList, Users, Shield, 
-  ArrowRight, Search, ExternalLink, CalendarHeart, CheckCircle 
+  ArrowRight, Search, ExternalLink, CalendarHeart, CheckCircle,
+  Mail, Bell, Filter, LayoutDashboard, Settings
 } from "lucide-react";
 
 export const TabsSection = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const AUTO_PLAY_DURATION = 6000; // 6 seconds
 
   const tabs = [
     {
       icon: Globe,
       label: "Browser extensions",
       description: "Quickly find and share scheduling links from your inbox, LinkedIn, CRM, and more.",
-      link: "Learn more",
+      link: "Explore extensions",
+      color: "blue"
     },
     {
       icon: Zap,
       label: "Automated workflows",
       description: "Send reminders, follow-ups, and other automated messages to reduce no-shows.",
-      link: "Learn more",
+      link: "See workflows",
+      color: "indigo"
     },
     {
       icon: ClipboardList,
       label: "Routing forms",
       description: "Ask scheduling questions to automatically match invitees with the right meeting.",
-      link: "Learn more",
+      link: "Learn about routing",
+      color: "purple"
     },
     {
       icon: Users,
       label: "Round robin & collective",
       description: "Distribute meetings fairly across your team or host meetings with multiple hosts.",
-      link: "Learn more",
+      link: "Team scheduling",
+      color: "teal"
     },
     {
       icon: Shield,
       label: "Admin management",
       description: "Gain visibility and control over your organization's scheduling activities.",
-      link: "Learn more",
+      link: "Admin features",
+      color: "slate"
     },
   ];
 
+  // Auto-play logic
+  useEffect(() => {
+    const startTimer = () => {
+      autoPlayRef.current = setInterval(() => {
+        setActiveTab((prev) => (prev + 1) % tabs.length);
+      }, AUTO_PLAY_DURATION);
+    };
+
+    startTimer();
+    
+    // Progress bar logic
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) return 0;
+        return prev + (100 / (AUTO_PLAY_DURATION / 100)); // Update every 100ms
+      });
+    }, 100);
+
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+      clearInterval(progressInterval);
+    };
+  }, [tabs.length]);
+
+  // Reset progress when tab changes
+  useEffect(() => {
+    setProgress(0);
+    if (autoPlayRef.current) {
+      clearInterval(autoPlayRef.current);
+      autoPlayRef.current = setInterval(() => {
+        setActiveTab((prev) => (prev + 1) % tabs.length);
+      }, AUTO_PLAY_DURATION);
+    }
+  }, [activeTab, tabs.length]);
+
   return (
     <section className="bg-white py-24 md:py-32 overflow-hidden">
-      <div className="text-center mb-16 px-6">
+      <div className="text-center mb-20 px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 font-bold text-sm mb-6"
+        >
+          Powerful Features
+        </motion.div>
         <motion.h2 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl lg:text-[60px] font-semibold text-slate-800 leading-[1.1] mb-6 tracking-tight"
+          className="text-4xl md:text-5xl lg:text-[64px] font-bold text-slate-900 leading-[1.05] mb-8 tracking-tight"
         >
           More than a <span className="text-[#0069FF]">scheduling link</span>
         </motion.h2>
@@ -59,150 +111,218 @@ export const TabsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-lg md:text-xl text-slate-500 max-w-[650px] mx-auto mb-8 font-medium"
+          className="text-xl text-slate-500 max-w-[750px] mx-auto font-medium"
         >
-          Slotify's functionality goes way beyond just finding a time to meet, with customizable automated features to help you achieve goals faster.
+          Slotify's functionality goes way beyond just finding a time to meet. We automate your entire meeting lifecycle.
         </motion.p>
       </div>
 
-      <div className="grid lg:grid-cols-2 max-w-[1200px] mx-auto px-6 lg:px-10 gap-16 lg:gap-10 items-center">
-        {/* Left: App UI mockup */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-          className="relative flex items-center justify-center pt-10 lg:py-10"
-        >
-          {/* Decorative glowing backdrops */}
-          <div className="absolute inset-x-10 inset-y-0 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-full blur-[80px] -z-10" />
-          
-          {/* App card mockup */}
-          <div className="relative z-20 bg-white rounded-[24px] w-full max-w-[400px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
-            {/* Header */}
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-inner">
-                  <span className="text-white text-sm font-bold">S</span>
-                </div>
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-                </div>
-              </div>
-              <button className="bg-slate-800 text-white rounded-full px-4 py-2 text-xs font-semibold flex items-center gap-1 hover:bg-slate-700 transition">
-                + Create
-              </button>
-            </div>
-
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-5">
-                <span className="font-bold text-lg text-slate-800">Event types</span>
-                <span className="text-[#0069FF] text-sm font-semibold cursor-pointer flex items-center gap-1 hover:underline">
-                  New Event
-                </span>
-              </div>
-
-              <div className="bg-slate-50 rounded-xl px-4 py-3 flex items-center gap-3 mb-6 border border-gray-100 transition-colors hover:border-blue-200">
-                <Search size={16} className="text-slate-400" />
-                <span className="text-slate-400 text-sm font-medium">Search events...</span>
-              </div>
-
-              {/* Event Card */}
-              <motion.div 
-                whileHover={{ y: -4, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.05)", borderColor: "#0069FF" }}
-                className="border border-gray-200 rounded-2xl p-5 mb-5 cursor-pointer transition-all bg-white"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="font-bold text-base text-slate-800">Discovery Call</span>
-                  <div className="flex gap-1">
-                    <div className="w-1 h-1 rounded-full bg-slate-300"></div>
-                    <div className="w-1 h-1 rounded-full bg-slate-300"></div>
-                    <div className="w-1 h-1 rounded-full bg-slate-300"></div>
+      <div className="grid lg:grid-cols-2 max-w-[1300px] mx-auto px-6 lg:px-10 gap-16 lg:gap-24 items-center">
+        {/* Left: Dynamic App UI mockup */}
+        <div className="relative h-[500px] flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeTab}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
+              className="relative z-20 w-full max-w-[450px]"
+            >
+              <div className="bg-white rounded-[32px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden h-[480px]">
+                {/* Header */}
+                <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold">S</div>
+                    <div className="font-bold text-slate-800">Slotify</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><Settings size={14}/></div>
+                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><Bell size={14}/></div>
                   </div>
                 </div>
-                <p className="text-sm text-slate-500 mb-4 flex items-center gap-2">
-                  <CalendarHeart size={14} /> 30 min • One-on-one
-                </p>
-                <div className="flex gap-3">
-                  <button className="flex-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-2.5 text-sm font-semibold text-slate-700 transition">
-                    Book
-                  </button>
-                  <button className="flex-[2] bg-white border border-slate-200 shadow-sm rounded-lg py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-300 transition flex justify-center items-center gap-2">
-                    <ExternalLink size={14} /> Share Link
-                  </button>
+
+                <div className="p-8">
+                  {/* Tab Specific Content */}
+                  {activeTab === 0 && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Globe className="text-blue-500" size={20}/>
+                        <h4 className="font-bold text-lg">Chrome Extension</h4>
+                      </div>
+                      <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                        <p className="text-sm text-blue-700 font-medium mb-3">Add to Gmail</p>
+                        <div className="h-2 w-full bg-blue-200 rounded-full mb-2"></div>
+                        <div className="h-2 w-2/3 bg-blue-100 rounded-full"></div>
+                      </div>
+                      <div className="space-y-4">
+                        {[1, 2].map(i => (
+                          <div key={i} className="flex items-center gap-4 p-3 border border-gray-50 rounded-xl">
+                            <div className="w-8 h-8 rounded-lg bg-slate-100"></div>
+                            <div className="flex-1 space-y-2">
+                              <div className="h-2 w-24 bg-slate-100 rounded-full"></div>
+                              <div className="h-2 w-16 bg-slate-50 rounded-full"></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 1 && (
+                    <div className="space-y-6 text-indigo-600">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Zap size={20}/>
+                        <h4 className="font-bold text-lg text-slate-800">Workflow: Reminder</h4>
+                      </div>
+                      <motion.div 
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        className="p-5 bg-indigo-50 border border-indigo-100 rounded-2xl"
+                      >
+                        <div className="flex items-center gap-3 mb-4">
+                          <Mail size={18} />
+                          <p className="text-sm font-bold">Auto-Email Sent</p>
+                        </div>
+                        <p className="text-[13px] text-indigo-700 leading-relaxed">"Hi there! Just a heads up about our meeting in 1 hour. Looking forward to it!"</p>
+                      </motion.div>
+                      <div className="flex flex-col gap-3">
+                        <div className="h-12 border-l-2 border-indigo-100 ml-4"></div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white"><CheckCircle size={16}/></div>
+                          <p className="text-sm font-bold text-slate-800">Trigger: Follow-up</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 2 && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <ClipboardList className="text-purple-500" size={20}/>
+                        <h4 className="font-bold text-lg text-slate-800">Routing Form</h4>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-xs font-bold text-slate-400 uppercase mb-2">What is your goal?</p>
+                          <div className="p-3 border border-purple-200 bg-purple-50 rounded-xl text-sm font-medium text-purple-700">Sales Consultation</div>
+                        </div>
+                        <div className="p-3 border border-gray-200 rounded-xl text-sm text-slate-400">Select company size...</div>
+                        <motion.button 
+                          whileHover={{ scale: 1.02 }}
+                          className="w-full py-3 bg-purple-600 text-white rounded-xl font-bold text-sm"
+                        >
+                          Route Meeting
+                        </motion.button>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 3 && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Users className="text-teal-500" size={20}/>
+                        <h4 className="font-bold text-lg text-slate-800">Team Round Robin</h4>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {[1, 2, 3, 4].map(i => (
+                          <div key={i} className="p-4 border border-teal-100 bg-teal-50/50 rounded-2xl text-center">
+                            <div className="w-10 h-10 rounded-full bg-teal-100 mx-auto mb-2 flex items-center justify-center text-teal-600 ring-2 ring-white">
+                              {String.fromCharCode(64 + i)}
+                            </div>
+                            <p className="text-xs font-bold text-slate-800">Expert {i}</p>
+                            <p className="text-[10px] text-teal-600">Available</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 4 && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Shield className="text-slate-600" size={20}/>
+                        <h4 className="font-bold text-lg text-slate-800">Admin Controls</h4>
+                      </div>
+                      <div className="p-5 border border-slate-200 rounded-2xl space-y-4">
+                        <div className="flex justify-between items-center">
+                          <p className="text-xs font-bold text-slate-500">USER PERMISSION</p>
+                          <div className="w-8 h-4 bg-blue-600 rounded-full"></div>
+                        </div>
+                        <div className="h-px bg-slate-100"></div>
+                        <div className="space-y-3">
+                           <div className="h-2 w-full bg-slate-100 rounded-full"></div>
+                           <div className="h-2 w-3/4 bg-slate-100 rounded-full"></div>
+                           <div className="h-2 w-1/2 bg-slate-50 rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-              
-              {/* Skeleton item */}
-              <div className="border border-gray-100 rounded-2xl p-5 mb-2 opacity-60">
-                 <div className="h-4 w-1/2 bg-slate-100 rounded mb-3"></div>
-                 <div className="h-3 w-1/3 bg-slate-100 rounded"></div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </AnimatePresence>
           
-          {/* Floating UI Elements */}
+          {/* Decorative glows that change color */}
           <motion.div 
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -right-4 top-1/4 bg-white p-4 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 flex items-center gap-3 z-30 hidden md:flex"
-          >
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-               <CheckCircle size={20} />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-800">Booking confirmed</p>
-              <p className="text-xs text-slate-500">Alex arranged a meeting</p>
-            </div>
-          </motion.div>
+            animate={{ 
+              backgroundColor: activeTab === 0 ? "#dbeafe" : activeTab === 1 ? "#e0e7ff" : activeTab === 2 ? "#f3e8ff" : activeTab === 3 ? "#ccfbf1" : "#f1f5f9",
+              opacity: [0.4, 0.6, 0.4]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-x-0 inset-y-10 rounded-full blur-[100px] -z-10" 
+          />
+        </div>
 
-        </motion.div>
-
-        {/* Right: Feature tabs */}
-        <div className="lg:pl-10">
+        {/* Right: Interactive Feature items */}
+        <div className="flex flex-col">
           {tabs.map((tab, i) => {
             const Icon = tab.icon;
             const isActive = i === activeTab;
             return (
-              <motion.div 
+              <div 
                 key={i} 
-                className={`py-6 border-b border-gray-100 cursor-pointer group transition-colors ${isActive ? '' : 'hover:bg-slate-50/50'}`}
+                className={`relative px-6 py-6 border-l-4 transition-all duration-300 cursor-pointer ${isActive ? 'bg-slate-50 border-[#0069FF]' : 'border-transparent hover:bg-slate-50/50'}`}
                 onClick={() => setActiveTab(i)}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
               >
-                <div className="flex items-center gap-5 px-2">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${isActive ? 'bg-[#0069FF] text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'}`}>
-                    <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
+                {/* Progress bar background */}
+                {isActive && (
+                  <motion.div 
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: progress / 100 }}
+                    className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 origin-left z-10"
+                    transition={{ ease: "linear", duration: 0.1 }}
+                  />
+                )}
+                
+                <div className="flex items-center gap-5">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${isActive ? 'bg-[#0069FF] text-white shadow-lg' : 'bg-slate-100 text-slate-500'}`}>
+                    <Icon size={22} />
                   </div>
-                  <span className={`text-[19px] transition-all duration-300 ${isActive ? 'font-bold text-slate-800' : 'font-semibold text-slate-500'}`}>
-                    {tab.label}
-                  </span>
+                  <div>
+                    <h3 className={`text-xl transition-all duration-300 ${isActive ? 'font-bold text-slate-900' : 'font-semibold text-slate-600'}`}>
+                      {tab.label}
+                    </h3>
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div 
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <p className="mt-2 text-sm text-slate-500 leading-relaxed font-medium">
+                            {tab.description}
+                          </p>
+                          <div className="mt-4 flex items-center gap-2 text-[#0069FF] font-bold text-sm">
+                            {tab.link} <ArrowRight size={16} />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-4 pl-[76px] pr-4">
-                        <p className="text-base text-slate-500 mb-3 leading-relaxed">
-                          {tab.description}
-                        </p>
-                        <span className="text-[#0069FF] text-[15px] font-bold flex items-center gap-1.5 hover:gap-2 transition-all cursor-pointer">
-                          {tab.link} <ArrowRight size={16} />
-                        </span>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+              </div>
             )
           })}
         </div>
@@ -210,3 +330,4 @@ export const TabsSection = () => {
     </section>
   );
 };
+

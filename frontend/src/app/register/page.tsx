@@ -5,14 +5,11 @@ const SLOTIFY_BLUE = "#0069FF";
 
 const SlotifyLogo = () => (
   <Link href="/" className="flex items-center gap-2 mb-8">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="16" fill={SLOTIFY_BLUE} />
-      <path
-        d="M20.5 10.5C18.8 9.5 16.8 9 14.8 9.3C11.3 9.8 8.5 12.8 8.5 16.5C8.5 20.5 11.8 23.5 16 23.5C17.5 23.5 18.9 23 20 22.2"
-        stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none"
-      />
-      <path d="M20 14L23.5 16.5L20 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <img 
+      src="/logo.png" 
+      alt="Slotify Logo" 
+      className="w-8 h-8 object-contain" 
+    />
     <span className="font-bold text-[22px] tracking-tight" style={{ color: SLOTIFY_BLUE }}>
       Slotify
     </span>
@@ -27,6 +24,18 @@ export default function RegisterPage() {
         <div className="mx-auto w-full max-w-[420px]">
           <SlotifyLogo />
           
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <h3 className="text-sm font-semibold text-amber-800 mb-1">Attention Judges:</h3>
+            <p className="text-sm text-amber-700">
+              You don&apos;t need to input your own credentials! Dummy credentials are 
+              already pre-filled so you can quickly test the application. In case you clear them:
+            </p>
+            <div className="mt-2 text-xs text-amber-800 bg-amber-100/50 p-2 rounded-lg font-mono font-medium">
+              Email: default@example.com<br/>
+              Password: admin123
+            </div>
+          </div>
+
           <h2 className="mt-8 text-3xl font-extrabold text-slate-900 mb-2">Create your account</h2>
           <p className="text-sm text-gray-500 mb-8">
             Start scheduling meetings without the back-and-forth emails.

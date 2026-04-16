@@ -45,14 +45,92 @@ Slotify is an enterprise-grade scheduling automation platform designed to facili
 
 ## Database Schema
 
-The database is built with PostgreSQL and managed using Prisma. Below is an overview of the core models and their relationships:
+The database is built with PostgreSQL and managed using Prisma. Below is a detailed explanation of every structure, table, column, and relationship within the system.
 
-- **`User` (`users`)**: Represents the hosts who offer bookable slots. It stores essential profile data, including their `username` and `timezone`, which are critical for routing and accurate date/time calculations.
-- **`EventType` (`event_types`)**: Defines the different meetings a `User` offers (e.g., "30 Min Discovery Call"). Each configuration includes `duration_minutes`, `buffer_minutes` (to prevent back-to-back meetings), styling (`color`), and a `questions` JSON field for custom invitee intake forms.
-- **`Availability` (`availability`)**: A grouped schedule configuration belonging to a `User`. Users can maintain multiple schedules, with one acting as the default.
-- **`AvailabilityRule` (`availability_rules`)**: The recurring weekly working hours linked to an `Availability` record. It defines which days of the week (`day_of_week`) and specific time windows (`start_time`, `end_time`) the user is typically free.
-- **`DateOverride` (`date_overrides`)**: Specific date exceptions for an `Availability` schedule. This allows users to override their regular weekly rules (e.g., marking a specific day as entirely out-of-office or defining atypical hours).
-- **`Booking` (`bookings`)**: Represents a scheduled appointment. It links to a specific `EventType` and stores the invitee's contact info, exact `start_time` and `end_time`, a unique `cancel_token`, the current `status` (scheduled or cancelled), and a JSON payload of `invitee_answers`.
+### 1. `User` (`users` table)
+Represents the account holders (hosts) who offer bookable slots.
+- **Columns**:
+  - `id` (Int, Primary Key): Auto-incrementing unique identifier.
+  - `name` (String, max 100): The host's full name.
+  - `email` (String, max 255): Unique email address used for login/notifications.
+  - `username` (String, max 50): Unique handle used for their public booking URLs (e.g., `/user/my-username`).
+  - `timezone` (String, max 60): The host's local timezone (e.g., "America/New_York"), critical for accurate date/time routing.
+  - `created_at` (DateTime): Timestamp of account creation.
+- **Relationships**:
+  - `event_types`: 1-to-many relationship with `EventType` models.
+  - `availabilities`: 1-to-many relationship with `Availability` models.
+
+### 2. `EventType` (`event_types` table)
+Defines specific meeting templates or events created by the user (e.g., "15 Min Quick Chat", "1 Hour Strategy Call").
+- **Columns**:
+  - `id` (Int, Primary Key): Auto-incrementing unique identifier.
+  - `user_id` (Int): Foreign Key linking to the `User` table.
+  - `name` (String, max 100): Display name of the event type.
+  - `slug` (String, max 100): Unique URL-friendly string identifying the event under a user's route.
+  - `duration_minutes` (Int): The length of the meeting in minutes.
+  - `buffer_minutes` (Int, default 0): Extra padding time added before/after meetings to prevent back-to-back overlaps.
+  - `description` (String, Text, optional): Markdown or text explaining what the meeting is about.
+  - `questions` (Json, optional): JSON structure holding custom questions to ask the invitee during booking.
+  - `color` (String, max 7, optional): Hex color code for UI rendering.
+  - `is_active` (Boolean, default true): Toggle to enable or disable bookings for this event.
+  - `created_at` (DateTime): Timestamp of creation.
+- **Relationships**:
+  - `user`: Belongs to a single `User` (OnDelete: Cascade).
+  - `bookings`: 1-to-many relationship tracking all appointments (`Booking`) booked under this template.
+
+### 3. `Availability` (`availability` table)
+Groups a distinct schedule configuration for a user. Users can have multiple setups (e.g., "Standard Working Hours", "Conference Schedule").
+- **Columns**:
+  - `id` (Int, Primary Key): Auto-incrementing unique identifier.
+  - `user_id` (Int): Foreign Key linking to the `User` table.
+  - `name` (String, max 100): Display name for the schedule.
+  - `is_default` (Boolean, default false): Marks if this is the primary schedule applied to new Event Types automatically.
+  - `created_at` (DateTime): Timestamp of creation.
+- **Relationships**:
+  - `user`: Belongs to a single `User` (OnDelete: Cascade).
+  - `rules`: 1-to-many relationship with standard weekly `AvailabilityRule` sets.
+  - `overrides`: 1-to-many relationship with specific `DateOverride` records.
+
+### 4. `AvailabilityRule` (`availability_rules` table)
+Defines standard weekly recurring working hours for a given `Availability` schedule.
+- **Columns**:
+  - `id` (Int, Primary Key): Auto-incrementing unique identifier.
+  - `availability_id` (Int): Foreign Key linking to the `Availability` table.
+  - `day_of_week` (Int, SmallInt): A number (0-6) representing the day of the week (where 0 is typically Sunday).
+  - `start_time` (String, max 8): The time the user becomes available (`"HH:mm:ss"` format).
+  - `end_time` (String, max 8): The time the user stops being available (`"HH:mm:ss"` format).
+  - `is_available` (Boolean, default true): Indicates whether the user is free or entirely blocked off on this weekday.
+- **Relationships**:
+  - `availability`: Belongs to a single `Availability` parent (OnDelete: Cascade).
+
+### 5. `DateOverride` (`date_overrides` table)
+Defines specific exceptions to standard weekly recurring availability (e.g., Vacation days, Holidays).
+- **Columns**:
+  - `id` (Int, Primary Key): Auto-incrementing unique identifier.
+  - `availability_id` (Int): Foreign Key linking to the `Availability` table.
+  - `override_date` (DateTime, Date formatting): The specific calendar date of the exception.
+  - `is_unavailable` (Boolean, default false): If true, blocks out the entire day regardless of times.
+  - `start_time` (String, max 8, optional): Overridden start time for partial availability.
+  - `end_time` (String, max 8, optional): Overridden end time for partial availability.
+- **Relationships**:
+  - `availability`: Belongs to a single `Availability` parent (OnDelete: Cascade).
+
+### 6. `Booking` (`bookings` table)
+Represents a finally scheduled appointment block between the host and an invitee.
+- **Columns**:
+  - `id` (Int, Primary Key): Auto-incrementing unique identifier.
+  - `event_type_id` (Int): Foreign Key linking to the `EventType` that was booked.
+  - `invitee_name` (String, max 100): The full name of the person who booked the slot.
+  - `invitee_email` (String, max 255): The email of the person who booked the slot.
+  - `start_time` (DateTime): The exact calculated UTC start time of the meeting. Indexed.
+  - `end_time` (DateTime): The exact calculated UTC end time of the meeting.
+  - `status` (BookingStatus, Default 'scheduled'): An enum (`scheduled` or `cancelled`) denoting the health of the booking.
+  - `cancel_token` (String, max 36): A uniquely generated UUID allowing the invitee to cancel/reschedule from an email link without needing an account.
+  - `notes` (String, Text, optional): General notes provided by the invitee.
+  - `invitee_answers` (Json, optional): JSON mapping of dynamic extra questions asked during booking to their provided answers.
+  - `created_at` (DateTime): Timestamp of the booking action.
+- **Relationships**:
+  - `event_type`: Belongs to the chosen `EventType` (OnDelete: Cascade).
 
 ---
 

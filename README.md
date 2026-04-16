@@ -37,9 +37,22 @@ Slotify is an enterprise-grade scheduling automation platform designed to facili
 
 ### Backend
 - **Framework**: Node.js with Express.js
-- **Database**: MySQL
+- **Database**: PostgreSQL
 - **ORM**: Prisma Client
 - **Date Handling**: `date-fns` & `date-fns-tz`
+
+---
+
+## Database Schema
+
+The database is built with PostgreSQL and managed using Prisma. Below is an overview of the core models and their relationships:
+
+- **`User` (`users`)**: Represents the hosts who offer bookable slots. It stores essential profile data, including their `username` and `timezone`, which are critical for routing and accurate date/time calculations.
+- **`EventType` (`event_types`)**: Defines the different meetings a `User` offers (e.g., "30 Min Discovery Call"). Each configuration includes `duration_minutes`, `buffer_minutes` (to prevent back-to-back meetings), styling (`color`), and a `questions` JSON field for custom invitee intake forms.
+- **`Availability` (`availability`)**: A grouped schedule configuration belonging to a `User`. Users can maintain multiple schedules, with one acting as the default.
+- **`AvailabilityRule` (`availability_rules`)**: The recurring weekly working hours linked to an `Availability` record. It defines which days of the week (`day_of_week`) and specific time windows (`start_time`, `end_time`) the user is typically free.
+- **`DateOverride` (`date_overrides`)**: Specific date exceptions for an `Availability` schedule. This allows users to override their regular weekly rules (e.g., marking a specific day as entirely out-of-office or defining atypical hours).
+- **`Booking` (`bookings`)**: Represents a scheduled appointment. It links to a specific `EventType` and stores the invitee's contact info, exact `start_time` and `end_time`, a unique `cancel_token`, the current `status` (scheduled or cancelled), and a JSON payload of `invitee_answers`.
 
 ---
 
@@ -72,7 +85,7 @@ slotify/
 
 ### Prerequisites
 - **Node.js** (v18 or higher)
-- **MySQL Database Server** (running locally or remotely)
+- **PostgreSQL Database Server** (running locally or remotely)
 
 ### Backend Setup
 
@@ -87,10 +100,10 @@ slotify/
    ```
 
 3. **Configure the Environment:**
-   Create a `.env` file in the `backend/` directory and configure your MySQL connection string.
+   Create a `.env` file in the `backend/` directory and configure your PostgreSQL connection string.
    ```env
-   # Update with your MySQL credentials
-   DATABASE_URL="mysql://username:password@localhost:3306/slotify_db"
+   # Update with your PostgreSQL credentials
+   DATABASE_URL="postgresql://username:password@localhost:5432/slotify_db"
    PORT=3001
    ```
 

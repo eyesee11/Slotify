@@ -22,7 +22,7 @@ export const HeroSection = () => {
       opacity: 1, 
       y: 0, 
       transition: { 
-        type: "spring", 
+        type: "spring" as const, 
         stiffness: 100, 
         damping: 20,
         duration: 0.8
@@ -37,7 +37,7 @@ export const HeroSection = () => {
       scale: 1, 
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 15,
         delay: 1.2
@@ -48,7 +48,7 @@ export const HeroSection = () => {
       transition: {
         duration: 4,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "easeInOut" as const
       }
     }
   };

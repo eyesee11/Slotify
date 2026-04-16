@@ -7,9 +7,9 @@ export const SlotifyLogo = () => (
     <img 
       src="/logo.png" 
       alt="Slotify Logo" 
-      className="w-8 h-8 object-contain" 
+      className="w-9 h-9 object-contain" 
     />
-    <span className="font-bold text-[22px] tracking-tight text-slate-800">
+    <span className="font-bold text-[28px] tracking-tight text-slate-800">
       Slotify
     </span>
   </div>

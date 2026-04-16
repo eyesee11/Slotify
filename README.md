@@ -4,6 +4,8 @@ Slotify is an enterprise-grade scheduling automation platform designed to facili
 
 ## Table of Contents
 
+- [Live Links](#live-links)
+- [Screenshots](#screenshots)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -13,6 +15,32 @@ Slotify is an enterprise-grade scheduling automation platform designed to facili
   - [Frontend Setup](#frontend-setup)
 - [Assumptions & Design Decisions](#assumptions--design-decisions)
 - [Key Features Implemented](#key-features-implemented)
+
+---
+
+## Live Links
+
+- **Frontend Application:** [\[Live Frontend\]](https://slot-ify.vercel.app/)
+- **Backend API Base URL:** [\[Live Backend\]](https://slotify-sage.vercel.app/)
+
+---
+
+## Screenshots
+
+### Landing Page
+> ![Landing Page Screenshot](./screenshots/landing.png)
+
+### User Authentication
+> ![Login/Register Screenshot](./screenshots/auth.png)
+
+### Host Dashboard & Event Types
+> ![Dashboard Screenshot](./screenshots/dashboard.png)
+
+### Availability Rules Management
+> ![Availability Management Screenshot](./screenshots/availability.png)
+
+### Invitee Public Booking Experience
+> ![Booking Flow Screenshot](./screenshots/booking.png)
 
 ---
 

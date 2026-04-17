@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Clock, Globe, ArrowLeft, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
+import { Clock, Globe, ArrowLeft, ChevronLeft, ChevronRight, AlertCircle, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getEventTypeBySlug, getAvailableSlots, createBooking, cancelBooking, Booking, EventType } from '@/lib/api';
 import {
@@ -102,6 +102,23 @@ function TimeSlotPicker({
 
   return (
     <div className="slots-panel">
+      <div style={{
+        background: 'var(--color-primary-light)',
+        color: 'var(--color-primary)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12.5px',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '8px',
+        marginBottom: '16px',
+        lineHeight: 1.4,
+        border: '1px solid var(--color-primary)'
+      }}>
+        <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+        <span>If you don't see your desired time slot here, it's already booked somewhere else or outside the operating hours.</span>
+      </div>
+
       {slots.map(slot => (
         <button
           key={slot}
@@ -371,7 +388,7 @@ export default function BookingPage({ params }: { params: Promise<{ username: st
                 </div>
 
                 {/* Slots column */}
-                {selectedDate && (
+                {selectedDate && (slots.length > 0 || slotsLoading) && (
                   <div style={{ minWidth: 180 }}>
                     <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>
                       {formatDateLong(selectedDate + 'T00:00:00')}
@@ -382,6 +399,11 @@ export default function BookingPage({ params }: { params: Promise<{ username: st
                       onSelect={handleSlotSelect}
                       loading={slotsLoading}
                     />
+                  </div>
+                )}
+                {selectedDate && slots.length === 0 && !slotsLoading && (
+                  <div style={{ minWidth: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)', fontSize: 14 }}>
+                    No available time slots on this date.
                   </div>
                 )}
               </motion.div>

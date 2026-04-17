@@ -82,7 +82,7 @@ export const HeroSection = () => {
             Introducing Slotify 2.0
           </motion.div>
           
-          <motion.h1 variants={itemVars} className="text-5xl md:text-7xl lg:text-[76px] font-bold text-slate-900 leading-[1.05] tracking-tight mb-8">
+          <motion.h1 variants={itemVars} className="text-5xl md:text-7xl lg:text-[76px]  text-slate-900 leading-[1.05] tracking-tight mb-8">
             Scheduling <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">supercharged.</span>
           </motion.h1>
@@ -117,24 +117,45 @@ export const HeroSection = () => {
             transition={{ duration: 1, delay: 0.5, type: "spring" }}
             className="bg-white rounded-[32px] shadow-[0_32px_80px_-15px_rgba(0,0,0,0.1)] border border-gray-100 p-8 relative z-20"
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl">S</div>
-              <div className="space-y-2">
-                <div className="w-24 h-3 bg-slate-100 rounded-full"></div>
-                <div className="w-32 h-2 bg-slate-50 rounded-full"></div>
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-slate-800 uppercase tracking-widest text-[#0069FF]">April 2026</span>
+                <span className="text-2xl font-bold text-slate-800">Select a Date</span>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-100 bg-white text-slate-400 cursor-not-allowed">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </div>
+                <div className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-100 bg-white text-[#0069FF] hover:bg-blue-50 cursor-pointer transition-colors">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
               </div>
             </div>
             
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="p-4 border border-gray-50 rounded-2xl flex items-center justify-between hover:border-blue-100 hover:bg-blue-50/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${i === 1 ? 'bg-blue-400' : 'bg-slate-200'}`}></div>
-                    <div className="w-40 h-3 bg-slate-100 rounded-full"></div>
-                  </div>
-                  <div className="w-12 h-6 bg-slate-50 rounded-full"></div>
-                </div>
+            <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center mb-2">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                <div key={day} className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{day}</div>
               ))}
+              {/* Empty cells for April 2026 offset (April 1st is Wednesday) */}
+              <div className="w-10 h-10"></div>
+              <div className="w-10 h-10"></div>
+              <div className="w-10 h-10"></div>
+              {/* Days */}
+              {[...Array(30)].map((_, i) => {
+                const day = i + 1;
+                const isSelected = day === 17;
+                const isAvailable = [1, 2, 7, 8, 9, 14, 15, 16, 17, 21, 22, 23, 28, 29, 30].includes(day);
+                
+                return (
+                  <div key={day} className={`w-10 h-10 mx-auto flex flex-col items-center justify-center rounded-full text-sm font-bold ${
+                    isSelected ? 'bg-[#0069FF] text-white shadow-md shadow-blue-500/30' : 
+                    isAvailable ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 cursor-pointer transition-colors' : 
+                    'text-slate-300'
+                  }`}>
+                    {day}
+                  </div>
+                )
+              })}
             </div>
           </motion.div>
 

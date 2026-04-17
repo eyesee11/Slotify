@@ -77,9 +77,9 @@ export const getAvailableSlots = async (slug, requestedDate, userTimezone = 'UTC
   }
 
   // 5. Fetch existing bookings
-  // We check for any bookings that overlap with the entire day to be safe
-  const searchStart = startOfDay(startHost);
-  const searchEnd = endOfDay(startHost);
+  // We check for any bookings that overlap with the day, expanding bounds to catch cross-timezone bookings safely
+  const searchStart = addMinutes(startHost, -1440); // 1 day before
+  const searchEnd = addMinutes(endHost, 1440); // 1 day after
 
   const bookings = await prisma.booking.findMany({
     where: {
@@ -91,25 +91,18 @@ export const getAvailableSlots = async (slug, requestedDate, userTimezone = 'UTC
   });
 
   // 6. Filter slots against bookings + buffer
+  const bufferMs = (eventType.buffer_minutes || 0) * 60000;
+  
   return generatedSlots.filter(slot => {
-    // A slot [sS, sE] is valid if no booking [bS, bE] overlaps with [sS - buffer, sE + buffer]
-    // Wait, the buffer applies to the NEW booking too.
-    // Effectively, we need sS to be >= bE + buffer AND sE to be <= bS - buffer
-    
     const sS = slot.start.getTime();
     const sE = slot.end.getTime();
 
     const hasConflict = bookings.some(booking => {
       const bS = booking.start_time.getTime();
       const bE = booking.end_time.getTime();
-
-      // Check overlap: (sS < bE + bufferMinutes) && (sE > bS - bufferMinutes)
-      // Actually, buffer applies to both. If I have a 10:00 booking and 15m buffer, 
-      // I can't start another one until 10:30 + 15 = 10:45? No, that's double buffering.
-      // Usually: bE + buffer is the earliest start.
       
-      const conflictStart = bS - (eventType.buffer_minutes * 60000);
-      const conflictEnd = bE + (eventType.buffer_minutes * 60000);
+      const conflictStart = bS - bufferMs;
+      const conflictEnd = bE + bufferMs;
 
       return (sS < conflictEnd && sE > conflictStart);
     });

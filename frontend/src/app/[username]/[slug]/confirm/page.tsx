@@ -1,13 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Check, Calendar, Clock, Video, User, Mail, X } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Check, Calendar, Clock, Video, User, Mail, X, Home } from 'lucide-react';
 import { getBookingConfirmation, cancelBooking, Booking } from '@/lib/api';
 import { formatDateLong, formatTimeRange } from '@/lib/utils';
 
 export default function ConfirmPage({ params }: { params: Promise<{ username: string; slug: string }> }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get('token') ?? '';
 
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -15,6 +16,7 @@ export default function ConfirmPage({ params }: { params: Promise<{ username: st
   const [cancelled, setCancelled] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState('');
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     if (!token) { setLoading(false); return; }
@@ -23,6 +25,21 @@ export default function ConfirmPage({ params }: { params: Promise<{ username: st
       .catch(() => setError('Booking not found.'))
       .finally(() => setLoading(false));
   }, [token]);
+
+  useEffect(() => {
+    if (booking && !cancelled && !error) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [booking, cancelled, error]);
+
+  useEffect(() => {
+    if (countdown <= 0 && !cancelled && !error) {
+      router.push('/event-types');
+    }
+  }, [countdown, cancelled, error, router]);
 
   const handleCancel = async () => {
     if (!confirm('Are you sure you want to cancel this meeting?')) return;
@@ -141,6 +158,14 @@ export default function ConfirmPage({ params }: { params: Promise<{ username: st
           style={{ width: '100%', justifyContent: 'center', marginBottom: 12, background: 'var(--color-surface)', color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}
         >
           Reschedule
+        </Link>
+        
+        <Link
+          href="/event-types"
+          className="btn-primary"
+          style={{ width: '100%', justifyContent: 'center', marginBottom: 20 }}
+        >
+          <Home size={16} /> Go back to Dashboard ({countdown}s)
         </Link>
 
         <button

@@ -48,7 +48,7 @@ export const StepsSection = () => {
         >
           <motion.h2 
             variants={itemVariants}
-            className="text-4xl md:text-6xl font-bold text-white mb-12 leading-[1.1] tracking-tight"
+            className="text-4xl md:text-6xl  text-white mb-12 leading-[1.1] tracking-tight"
           >
             Seamless scheduling in <span className="text-blue-400">4 simple steps</span>
           </motion.h2>

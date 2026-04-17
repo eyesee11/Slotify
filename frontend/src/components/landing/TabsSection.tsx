@@ -102,7 +102,7 @@ export const TabsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl lg:text-[64px] font-bold text-slate-900 leading-[1.05] mb-8 tracking-tight"
+          className="text-4xl md:text-5xl lg:text-[64px]  text-slate-900 leading-[1.05] mb-8 tracking-tight"
         >
           More than a <span className="text-[#0069FF]">scheduling link</span>
         </motion.h2>

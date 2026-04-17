@@ -45,7 +45,7 @@ export const IntegrationsSection = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-8 text-blue-600 font-bold text-sm">
             <Zap size={16} /> Ecosystem
           </div>
-          <h2 className="text-4xl lg:text-[64px] font-bold text-slate-900 leading-[1.05] mb-8 tracking-tight">
+          <h2 className="text-4xl lg:text-[64px] text-slate-900 leading-[1.05] mb-8 tracking-tight">
             Connect Slotify to the <span className="text-blue-600">tools you love</span>
           </h2>
           <p className="text-xl text-slate-500 mb-10 leading-relaxed font-medium">
